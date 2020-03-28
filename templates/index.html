@@ -6,7 +6,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sentimen Analysis</title>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link rel="stylesheet" href="{% static "vendor/css/bootstrap.min.css" %}">
 
     <style>
  
@@ -14,29 +14,46 @@
 </head>
 <body>
     
-    <div class="container mt-5 justify-content-center"  align="center">
-      
-        <div class="row justify-content-center">
+    <div class="container mt-5 justify-content-center"  align="center">      
+        <div class="row justify-content-center">      
             <div class="col-md-3">
-                <select class="custom-select">
+                <select class="custom-select" name="data1">
                     <option selected>Pilih menu</option>
-                    <option value="1">Oyo</option>
-                    <option value="2">Traveloka</option>
-                    <option value="3">Booking</option>
+                    <option value="Oyo">Oyo</option>
+                    <option value="Traveloka">Traveloka</option>
+                    <option value="Booking.com">Booking.com</option>
+                    <option value="Tiket.com">Tiket.com</option>
+                    <option value="Airy">Airy</option>
+                    <option value="Mister Aladin">Mister Aladin</option>
+                    <option value="Pegi-Pegi">Pegi-Pegi</option>
+                    <option value="RedDoorz">RedDoorz</option>
+                    <option value="Agoda">Agoda</option>
+                    <option value="Trivago">Trivago</option>
                 </select>
+               
+
             </div>
+           
             <div class="col-md-2 text-center">
                 <h4>Bandingkan</h4>
                 
             </div>
             <div class="col-md-3">
-                <select class="custom-select">
+                <select class="custom-select" name="data2">
                     <option selected>Pilih menu</option>
-                    <option value="1">Oyo</option>
-                    <option value="2">Traveloka</option>
-                    <option value="3">Booking</option>
+                    <option value="Oyo">Oyo</option>
+                    <option value="Traveloka">Traveloka</option>
+                    <option value="Booking.com">Booking.com</option>
+                    <option value="Tiket.com">Tiket.com</option>
+                    <option value="Airy">Airy</option>
+                    <option value="Mister Aladin">Mister Aladin</option>
+                    <option value="Pegi-Pegi">Pegi-Pegi</option>
+                    <option value="RedDoorz">RedDoorz</option>
+                    <option value="Agoda">Agoda</option>
+                    <option value="Trivago">Trivago</option>
                 </select>
             </div>
+       
         </div>
         <div class="row justify-content-center">
             <div class="col-md-3">
@@ -50,7 +67,9 @@
 
         <div class="row justify-content-center">
             <div class="col-md-3">
-                <canvas id="myChart1"></canvas>
+                <canvas id="myChart1">
+                    <p>Hello Fallback World</p>
+                </canvas>
             </div>
             <div class="col-md-2"></div>
             <div class="col-md-3">
@@ -63,10 +82,11 @@
       
     </div>
 
-<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
+<script src="{% static "vendor/js/jquery-3.2.1.slim.min.js" %}"></script>
+<script src= "{% static "vendor/js/bootstrap.min.js" %}" ></script>
+<script src="{% static "vendor/js/chart.js" %}"></script>
+
+
 <script>
     var ctx1 = document.getElementById('myChart1').getContext('2d');
     var ctx2 = document.getElementById('myChart2').getContext('2d');
@@ -85,6 +105,9 @@
         ]
     }],
 
+    
+
+
     // These labels appear in the legend and in the tooltips when hovering different arcs
     labels: [
         'Positif',
@@ -97,7 +120,9 @@
     var myDoughnutChart = new Chart(ctx1, {
         type: 'doughnut',
         data: data,
-        // options: options
+        options: {
+         
+        }
     });
 
     var myDoughnutChart = new Chart(ctx2, {
