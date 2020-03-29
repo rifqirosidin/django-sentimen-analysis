@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from . import scraping
 
 def index(request):
 
@@ -8,7 +9,10 @@ def index(request):
 def store(request):
 
     if(request.method == "POST"):
-        data = request.POST['data1']
-        print(data)
+        data = request.POST['value']
+        proses = scraping(data)
 
-        return render(request, 'index.html')  
+    return render(request, 'store.html')  
+    # return JsonResponse(data)
+
+

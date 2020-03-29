@@ -8,16 +8,13 @@
     <title>Sentimen Analysis</title>
     <link rel="stylesheet" href="{% static "vendor/css/bootstrap.min.css" %}">
 
-    <style>
- 
-    </style>
 </head>
 <body>
     
     <div class="container mt-5 justify-content-center"  align="center">      
         <div class="row justify-content-center">      
             <div class="col-md-3">
-                <select class="custom-select" name="data1">
+                <select class="custom-select" id="data1" name="data1">
                     <option selected>Pilih menu</option>
                     <option value="Oyo">Oyo</option>
                     <option value="Traveloka">Traveloka</option>
@@ -25,12 +22,16 @@
                     <option value="Tiket.com">Tiket.com</option>
                     <option value="Airy">Airy</option>
                     <option value="Mister Aladin">Mister Aladin</option>
-                    <option value="Pegi-Pegi">Pegi-Pegi</option>
+                    <option value="PegiPegi">Pegipegi</option>
                     <option value="RedDoorz">RedDoorz</option>
                     <option value="Agoda">Agoda</option>
                     <option value="Trivago">Trivago</option>
-                </select>
-               
+                </select>              
+                
+                <img src="{% static "images/oyo.png" %}" class="mt-3 mb-3" width="100%" height="auto" alt="My image" id="logo1">
+                <canvas id="myChart1" style="height:auto; width:80%">
+                   
+                </canvas>
 
             </div>
            
@@ -39,7 +40,7 @@
                 
             </div>
             <div class="col-md-3">
-                <select class="custom-select" name="data2">
+                <select class="custom-select" id="data2" name="data2">
                     <option selected>Pilih menu</option>
                     <option value="Oyo">Oyo</option>
                     <option value="Traveloka">Traveloka</option>
@@ -52,39 +53,90 @@
                     <option value="Agoda">Agoda</option>
                     <option value="Trivago">Trivago</option>
                 </select>
+
+                <img src="{% static "images/oyo.png" %}" class="mt-3 mb-3" width="100%" height="auto" alt="My image" id="logo2">
+                <canvas id="myChart2" style="height:auto; width:80%"></canvas>
+
             </div>
        
         </div>
-        <div class="row justify-content-center">
-            <div class="col-md-3">
-                <img src="{% static "images/oyo.png" %}" alt="My image">
-            </div>
-            <div class="col-md-2"></div>
-            <div class="col-md-3">
-                <img src="{% static "images/oyo.png" %}" alt="My image">
-            </div>
-        </div>
-
-        <div class="row justify-content-center">
-            <div class="col-md-3">
-                <canvas id="myChart1">
-                    <p>Hello Fallback World</p>
-                </canvas>
-            </div>
-            <div class="col-md-2"></div>
-            <div class="col-md-3">
-                <canvas id="myChart2"></canvas>
-            </div>
-            
-        </div>
-
-        
-      
+    
     </div>
 
 <script src="{% static "vendor/js/jquery-3.2.1.slim.min.js" %}"></script>
 <script src= "{% static "vendor/js/bootstrap.min.js" %}" ></script>
 <script src="{% static "vendor/js/chart.js" %}"></script>
+
+<script> 
+     
+  $.ajaxSetup({ 
+     beforeSend: function(xhr, settings) {
+         function getCookie(name) {
+             var cookieValue = null;
+             if (document.cookie && document.cookie != '') {
+                 var cookies = document.cookie.split(';');
+                 for (var i = 0; i < cookies.length; i++) {
+                     var cookie = jQuery.trim(cookies[i]);
+                     // Does this cookie string begin with the name we want?
+                     if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                         cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                         break;
+                     }
+                 }
+             }
+             return cookieValue;
+         }
+         if (!(/^http:.*/.test(settings.url) || /^https:.*/.test(settings.url))) {
+             // Only send the token to relative URLs i.e. locally.
+             xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
+         }
+     } 
+});
+
+    
+    $("#data1").change(function() {
+        let value = $(this).val()
+        let dir = "{% static 'images/' %}" + `${value}.png`
+        console.log(dir)
+        $.ajax({
+            type: "POST",
+            url: "{% url 'store' %}",
+            type: "JSON",
+            data: {
+                value: value
+            },
+            success: function(data) {
+                console.log("sukses")
+                $("#logo1").attr("src", dir)
+            },
+            error: function(data) {
+                console.log(data)
+            }
+        })
+    })
+
+    $("#data2").change(function() {
+        let value = $(this).val()
+        let dir = "{% static 'images/' %}" + `${value}.png`
+        console.log(dir)
+        $.ajax({
+            type: "POST",
+            url: "{% url 'store' %}",
+            type: "JSON",
+            data: {
+                value: value
+            },
+            success: function(data) {
+                console.log("sukses")
+                $("#logo2").attr("src", dir)
+            },
+            error: function(data) {
+                console.log(data)
+            }
+        })
+    })
+
+</script>
 
 
 <script>
@@ -104,9 +156,6 @@
             'rgb(230, 18, 7)'
         ]
     }],
-
-    
-
 
     // These labels appear in the legend and in the tooltips when hovering different arcs
     labels: [
