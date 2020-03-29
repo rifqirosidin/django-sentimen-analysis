@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from . import scraping
+from . import scraping as process
 
 def index(request):
 
@@ -7,10 +7,10 @@ def index(request):
 
 
 def store(request):
-
     if(request.method == "POST"):
-        data = request.POST['value']
-        proses = scraping(data)
+        data = request.POST['value']               
+        proses = process.sentimenAnalysis()
+        proses.scrappingData(data=data)
 
     return render(request, 'store.html')  
     # return JsonResponse(data)

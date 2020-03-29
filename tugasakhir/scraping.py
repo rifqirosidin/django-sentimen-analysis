@@ -44,157 +44,162 @@ from collections import Counter, defaultdict
 from sklearn.metrics import accuracy_score
 from sklearn.metrics import classification_report, confusion_matrix
 
-class scraping:
+class sentimenAnalysis:
     search=""
-    nltk.download('punkt')
-    nltk.download('stopwords')
-    # %matplotlib inline
-    RANDOM_SEED = 42
-    np.random.seed(RANDOM_SEED)
-
-    chrome_path= r"C:\Users\Rifqi Rosidin\Documents\za\chromedriver_win32\chromedriver.exe"
-    driver=webdriver.Chrome(chrome_path)
-    def __init__(self, search):
-        self.search = input('Search... ')
+   
+    def scrappingData(request, data):  
         
-    driver.get('https://play.google.com/store/search?q=' +search+ '&c=apps'+ '&hl=in')
-    tes = driver.find_element_by_xpath("//*[@id='fcxH9b']/div[4]/c-wiz/div/div[2]/div/c-wiz/c-wiz[1]/c-wiz/div/div[2]/div[1]/c-wiz/div/div/div[1]/div/div/a")
-    tes.click()
-    time.sleep(5)
-    tes1 = driver.find_element_by_xpath("//*[@id='fcxH9b']/div[4]/c-wiz[2]/div/div[2]/div/div[1]/div/div/div[1]/div[6]/div/span/span")
-    tes1.click()
+        search = data
+        print(data)
+        nltk.download('punkt')
+        nltk.download('stopwords')
+        
+        # %matplotlib inline
+        RANDOM_SEED = 42
+        np.random.seed(RANDOM_SEED)
 
-    count = 1
-    i = 1
-    while i < 2:
-        driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-        time.sleep(2)
-        if((i % 2)== 0):
-            driver.execute_script('window.scrollTo(1, 2000);')
-            time.sleep(2)
-            tes2 = driver.find_element_by_xpath("//*[@id='fcxH9b']/div[4]/c-wiz[3]/div/div[2]/div/div[1]/div/div/div[1]/div[2]/div[2]/div/span/span")
-            tes2.click()
-        print("scroll ke -" + str(count))
-        i += 1
-        count+=1
-    print('udah scrolling')
-
-    a = 'test1'
-    b = 1
-    c = []
-    driver.execute_script('window.scrollTo(1, 10);')
-
-    while a != 'test':
-        d = 2
-        try:
-            tes3 = driver.find_element_by_xpath("//*[@id='fcxH9b']/div[4]/c-wiz[3]/div/div[2]/div/div[1]/div/div/div[1]/div[2]/div[1]/div["+str(b)+"]/div/div[2]/div[2]/span[1]/div/button")
-            tes3.click()
-        except NoSuchElementException:
-            d = 1
+        chrome_path= r"C:\Users\Rifqi Rosidin\Documents\za\chromedriver_win32\chromedriver.exe"
+        driver=webdriver.Chrome(chrome_path)
+        
             
-        tes4 = driver.find_element_by_xpath("/html/body/div[1]/div[4]/c-wiz[3]/div/div[2]/div/div[1]/div/div/div[1]/div[2]/div/div["+str(b)+"]/div/div[2]/div[2]/span["+str(d)+"]")
-        print(str(b) + tes4.text)
-        c.append(tes4.text)
-        if(b >= 10):
-            a = 'test'
-        b += 1
+        driver.get('https://play.google.com/store/search?q=' +search+ '&c=apps'+ '&hl=in')
+        tes = driver.find_element_by_xpath("//*[@id='fcxH9b']/div[4]/c-wiz/div/div[2]/div/c-wiz/c-wiz[1]/c-wiz/div/div[2]/div[1]/c-wiz/div/div/div[1]/div/div/a")
+        tes.click()
+        time.sleep(5)
+        tes1 = driver.find_element_by_xpath("//*[@id='fcxH9b']/div[4]/c-wiz[2]/div/div[2]/div/div[1]/div/div/div[1]/div[6]/div/span/span")
+        tes1.click()
+
+        count = 1
+        i = 1
+        while i < 2:
+            driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+            time.sleep(2)
+            if((i % 2)== 0):
+                driver.execute_script('window.scrollTo(1, 2000);')
+                time.sleep(2)
+                tes2 = driver.find_element_by_xpath("//*[@id='fcxH9b']/div[4]/c-wiz[3]/div/div[2]/div/div[1]/div/div/div[1]/div[2]/div[2]/div/span/span")
+                tes2.click()
+            print("scroll ke -" + str(count))
+            i += 1
+            count+=1
+        print('udah scrolling')
+        a = 'test1'
+        b = 1
+        c = []
+       
+        driver.execute_script('window.scrollTo(1, 10);')
+
+        while a != 'test':
+            d = 2
+            try:
+                tes3 = driver.find_element_by_xpath("//*[@id='fcxH9b']/div[4]/c-wiz[3]/div/div[2]/div/div[1]/div/div/div[1]/div[2]/div[1]/div["+str(b)+"]/div/div[2]/div[2]/span[1]/div/button")
+                tes3.click()
+            except NoSuchElementException:
+                d = 1
+                
+            tes4 = driver.find_element_by_xpath("/html/body/div[1]/div[4]/c-wiz[3]/div/div[2]/div/div[1]/div/div/div[1]/div[2]/div/div["+str(b)+"]/div/div[2]/div[2]/span["+str(d)+"]")
+            print(str(b) + tes4.text)
+            c.append(tes4.text)
+            if(b >= 10):
+                a = 'test'
+            b += 1
     #akhir tahap scrape data------------------------------------
 
-    print(len(c))
+        print(len(c))
 
     # hapus komentar
-    data = pd.DataFrame({"ulasan": c})
-    df = data['ulasan']
-    ulasan = []
-    x = 0
-    y = ''
-    for i in df :
-        emoji = i.replace('emoji','')
-        if emoji.isspace(): 
-            ulasan.append(x)
-        else:
-            y = 'tess'
-        x += 1
-    komentar = data.drop(ulasan)
+        data = pd.DataFrame({"ulasan": c})
+        df = data['ulasan']
+        ulasan = []
+        x = 0
+        y = ''
+        for i in df :
+            emoji = i.replace('emoji','')
+            if emoji.isspace(): 
+                ulasan.append(x)
+            else:
+                y = 'tess'
+            x += 1
+        komentar = data.drop(ulasan)
 
-    print("--------------hapus Emoji-------")
-    print(komentar)
+        print("--------------hapus Emoji-------")
+        print(komentar)
 
-    #tahap melakukan case folding dan angka dan whitespace()
-    case = []
-    for i in komentar['ulasan']:
-        b = re.sub(r'', '', str(i))
-        a = b.lower() #menjadikan huruf kecil
-        c = re.sub(r'[0-9]+', '', a) #menghilangkan angka
-        d = c.strip() #menghapus whitecase
-        e = d.translate(str.maketrans("","",string.punctuation)) #menghilangkan karakter
-        case.append(e)
+        #tahap melakukan case folding dan angka dan whitespace()
+        case = []
+        for i in komentar['ulasan']:
+            b = re.sub(r'', '', str(i))
+            a = b.lower() #menjadikan huruf kecil
+            c = re.sub(r'[0-9]+', '', a) #menghilangkan angka
+            d = c.strip() #menghapus whitecase
+            e = d.translate(str.maketrans("","",string.punctuation)) #menghilangkan karakter
+            case.append(e)
 
-    komentar['ulasan'] = case
-    print("\n")
-    print("-------case folding dan angka dan whirespace---------")
-    print(komentar)
+        komentar['ulasan'] = case
+        print("\n")
+        print("-------case folding dan angka dan whirespace---------")
+        print(komentar)
 
+        token=[]
 
-    token=[]
-
-    for i in komentar['ulasan']:
-        tokens = nltk.tokenize.word_tokenize(str(i))
-        token.append(tokens)
-    token
+        for i in komentar['ulasan']:
+            tokens = nltk.tokenize.word_tokenize(str(i))
+            token.append(tokens)
+        token
 
     #akhir tahap pemisahan teks menjadi potongan-potongan 
-
-    def listToString(s):  
+        def listToString(s):  
         
         # initialize an empty string 
-        str1 = ""  
-        
-        # traverse in the string   
-        for i in s:  
-            str1 += str(i)   
-        
-        # return string   
-        return str1  
+            str1 = ""  
+            
+            # traverse in the string   
+            for i in s:  
+                str1 += str(i) 
+            
+            # return string   
+            return str1
 
-    kata = listToString(token)
-        
-    #add stopword
-    print("-------pemisahan teks menjadi potongan-potongan ---------")
-    print(kata)
+        kata = listToString(token)
+            
+        #add stopword
+        print("-------pemisahan teks menjadi potongan-potongan ---------")
+        print(kata)
 
-    #add stopword
+        #add stopword
 
-    stop_factory = StopWordRemoverFactory().get_stop_words()
-    more_stopword = ['yg', 'tp'] #menambahkan stopword
-    print(stopwords)
+        stop_factory = StopWordRemoverFactory().get_stop_words()
+        more_stopword = ['yg', 'tp'] #menambahkan stopword
+        print(stopwords)
 
-    factory = StopWordRemoverFactory()
-    stopword = factory.create_stop_word_remover()
+        factory = StopWordRemoverFactory()
+        stopword = factory.create_stop_word_remover()
 
-    word=[]
-    for i in komentar['ulasan']:
-        stop = stopword.remove(str(i))
-        tokens = nltk.tokenize.word_tokenize(stop)
-        word = stop_factory + more_stopword
-        word.append(tokens)
-    # word
+        word=[]
+        for i in komentar['ulasan']:
+            stop = stopword.remove(str(i))
+            tokens = nltk.tokenize.word_tokenize(stop)
+            word = stop_factory + more_stopword
+            word.append(tokens)
+        # word
 
-    #akhir add stopword
+        #akhir add stopword
 
-    #menjadikan kata ke bentuk dasarnya
+        #menjadikan kata ke bentuk dasarnya
 
-    factory = StemmerFactory()
-    stemmer = factory.create_stemmer()
+        factory = StemmerFactory()
+        stemmer = factory.create_stemmer()
 
-    Hasil=[]
+        Hasil=[]
 
-    for i in komentar['ulasan']:
-        hasil = stemmer.stem(str(i))
-        Hasil.append(hasil)
-    Hasil
+        for i in komentar['ulasan']:
+            hasil = stemmer.stem(str(i))
+            Hasil.append(hasil)
+        Hasil
 
-    kata = listToString(Hasil)
+        kata = listToString(Hasil)
 
-    print("------menjadikan kata ke bentuk dasarnya--------")
-    print(kata)
+        print("------menjadikan kata ke bentuk dasarnya--------")
+        print(kata)
+
+       
