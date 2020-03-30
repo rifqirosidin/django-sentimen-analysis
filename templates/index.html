@@ -105,7 +105,8 @@
             type: "POST",
             url: "{% url 'store' %}",           
             data: {
-                value: value
+                value: value,
+                csrfmiddlewaretoken: '{{ csrf_token }}'
             },
             success: function(data) {
                 console.log("sukses")
