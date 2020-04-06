@@ -8,9 +8,9 @@ from selenium.webdriver.support import expected_conditions as ec
 from selenium.webdriver.common.keys import Keys
 from selenium.common.exceptions import NoSuchElementException
 import time
-
+from . import labeling as label
 import pandas as pd
-
+# from django.http import JsonResponse
 import pandas as pd
 import re
 import string
@@ -20,7 +20,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import Sastrawi
 import seaborn as sns
-import math 
+import math
 
 from nltk.tokenize import word_tokenize 
 from nltk.tokenize import WordPunctTokenizer
@@ -100,7 +100,7 @@ class sentimenAnalysis:
             tes4 = driver.find_element_by_xpath("/html/body/div[1]/div[4]/c-wiz[3]/div/div[2]/div/div[1]/div/div/div[1]/div[2]/div/div["+str(b)+"]/div/div[2]/div[2]/span["+str(d)+"]")
             print(str(b) + tes4.text)
             c.append(tes4.text)
-            if(b >= 10):
+            if(b >= 2):
                 a = 'test'
             b += 1
     #akhir tahap scrape data------------------------------------
@@ -199,7 +199,124 @@ class sentimenAnalysis:
 
         kata = listToString(Hasil)
 
-        print("------menjadikan kata ke bentuk dasarnya--------")
-        print(kata)
+        print("------PROSES LABELING--------")
+        config = dict()
+        config["negation"] = True
+        config["booster"]  = True
+        config["ungkapan"]  = True
+        config["consecutive"]  = True
+        config["repeated"]  = True
+        config["emoticon"]  = True
+        config["question"]  = True
+        config["exclamation"]  = True
+        config["punctuation"]  = True
+      
+        senti = label.sentistrength(config)
+
+        print(len(Hasil))
+        dt = pd.DataFrame({"ulasan":Hasil})
+        dt.head(len(Hasil))
+
+        sentim = []
+        for i in dt['ulasan']:
+            x = senti.main(i)
+            sentim.append(x['kelas'])
+
+        dt['label'] = sentim
+
+        #############################################
+        X = komentar['ulasan'].values
+        y = dt['label'].values
+        
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=RANDOM_SEED)
+
+        MNB = MultinomialNaiveBayes(
+            classes=np.unique(y), 
+            tokenizer=Tokenizer()
+        ).fit(X_train, y_train)
+
+        #akurasi algoritma
+        y_hat = MNB.predict(X_test)
+        akurasi = accuracy_score(y_test, y_hat)
+        print("akurasi")
+        print(accuracy_score(y_test, y_hat))
+        dt['akurasi'] = akurasi
+        return dt
+       
+class Tokenizer:
+  
+  def clean(self, text):
+      no_html = BeautifulSoup(text, "html.parser").get_text()
+      clean = re.sub("[^a-z\s]+", " ", no_html, flags=re.IGNORECASE)
+      return re.sub("(\s+)", " ", clean)
+
+  def tokenize(self, text):
+      clean = self.clean(text).lower()
+      stopwords_ind = stopwords.words("indonesian")
+      return [w for w in re.split("\W+", clean) if not w in stopwords_ind]
+
+#Menggunakan algoritma Naive Bayes
+class MultinomialNaiveBayes:
+  
+    def __init__(self, classes, tokenizer):
+      self.tokenizer = tokenizer
+      self.classes = classes
+      
+    def group_by_class(self, X, y):
+      data = dict()
+      for c in self.classes:
+        data[c] = X[np.where(y == c)]
+      return data
+           
+    def fit(self, X, y):
+        self.n_class_items = {}
+        self.log_class_priors = {}
+        self.word_counts = {}
+        self.vocab = set()
+
+        n = len(X)
+    
+        grouped_data = self.group_by_class(X, y)
+        
+        for c, data in grouped_data.items():
+          self.n_class_items[c] = len(data)
+          print("math log", self.n_class_items[c] / n)
+          self.log_class_priors[c] = math.log(self.n_class_items[c] / n)
+          
+          self.word_counts[c] = defaultdict(lambda: 0)
+          
+          for text in data:
+            counts = Counter(self.tokenizer.tokenize(text))
+            for word, count in counts.items():
+                if word not in self.vocab:
+                    self.vocab.add(word)
+                self.word_counts[c][word] += count
+        print("hasil math log")
+        print(self.log_class_priors)        
+        return self
+      
+    def laplace_smoothing(self, word, text_class):
+      num = self.word_counts[text_class][word] + 1
+      denom = self.n_class_items[text_class] + len(self.vocab)
+      return math.log(num / denom)
+      
+    def predict(self, X):
+        result = []
+        for text in X:
+          
+          class_scores = {c: self.log_class_priors[c] for c in self.classes}
+
+          words = set(self.tokenizer.tokenize(text))
+          for word in words:
+              if word not in self.vocab: continue
+
+              for c in self.classes:
+                
+                log_w_given_c = self.laplace_smoothing(word, c)
+                class_scores[c] += log_w_given_c
+                
+          result.append(max(class_scores, key=class_scores.get))
+
+        return result
 
        
