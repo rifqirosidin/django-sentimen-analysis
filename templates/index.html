@@ -144,7 +144,7 @@
             success: function(data) {                
                 $("#loading-data2").loading('stop')
                 $("#logo2").attr("src", dir)
-                $("#data2").removeAttr("disabled")
+                $("#data1").removeAttr("disabled")
                 let length = Object.keys(data.label).length
                     for(i=0;i<length;i++){
                         if(data.label[i] == 1){
