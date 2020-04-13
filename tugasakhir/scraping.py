@@ -100,7 +100,7 @@ class sentimenAnalysis:
             tes4 = driver.find_element_by_xpath("/html/body/div[1]/div[4]/c-wiz[3]/div/div[2]/div/div[1]/div/div/div[1]/div[2]/div/div["+str(b)+"]/div/div[2]/div[2]/span["+str(d)+"]")
             print(str(b) + tes4.text)
             c.append(tes4.text)
-            if(b >= 50):
+            if(b >= 500):
                 a = 'test'
             b += 1
     #akhir tahap scrape data------------------------------------
