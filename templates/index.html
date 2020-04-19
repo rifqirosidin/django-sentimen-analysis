@@ -12,7 +12,23 @@
 </head>
 <body>
     <h3 class="text-center mt-3">Sentimen Analysis</h3>
-    <div class="container mt-5 justify-content-center"  align="center">      
+    <p class="text-center">Perbandingan Aplikasi Hotel Booking</p>
+ 
+
+    <div class="container mt-3 justify-content-center"  align="center">  
+        <div class="row justify-content-center mb-4">
+            <div class="col-md-2">
+                <select class="custom-select" id="jumlah_data" name="jumlah_data">
+                    <option value="0" selected>Jumlah data</option>
+                    <option value="50">50</option>
+                    <option value="100">100</option>
+                    <option value="200">200</option>
+                    <option value="400">400</option>
+                    <option value="500">500</option>
+                    <option value="1000">1000</option>                    
+                </select> 
+            </div>
+        </div>    
         <div class="row justify-content-center">      
             <div class="col-md-3" id="loading-data1">
                 <select class="custom-select" id="data1" name="data1">
@@ -38,8 +54,7 @@
             </div>
            
             <div class="col-md-2 text-center">
-                <h4>Bandingkan</h4>
-                
+              <h4>Bandingkan</h4>                
             </div>
             <div class="col-md-3" id="loading-data2">
                 <select class="custom-select" id="data2" name="data2">
@@ -76,12 +91,17 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/randomcolor/0.4.2/randomColor.min.js"></script>
 <script src="{% static "vendor/jquery-loading/dist/jquery.loading.js" %}"></script>
 
+<script>
+  
+</script>
+
 <script> 
   
     var positif1 = []
     var negatif1 = []
     var positif2 = []
     var negatif2 = []
+    var jumlahDataScrapping = 0;
     var ctx1 = document.getElementById('myChart1').getContext('2d');
     var ctx2 = document.getElementById('myChart2').getContext('2d');
     $.ajaxSetup({
@@ -91,81 +111,100 @@
     $("#data1").change(function() {
         let value = $(this).val()
         let dir = "{% static 'images/' %}" + `${value}.png`
-        $('#loading-data1').loading();
-        $("#data2").attr("disabled", "true")
-        $.ajax({
-            type: "POST",
-            dataType: "JSON",
-            url: "{% url 'store' %}",           
-            data: {
-                value: value
-            },
-            success: function(data) {        
-                console.log(data)
-                $("#data2").removeAttr("disabled")
-              let length = Object.keys(data.label).length
-              for(i=0;i<length;i++){
-                if(data.label[i] == 1){
-                    positif1.push(data.label[i])               
-                }else{
-                    negatif1.push(data.label[i]) 
-                }
-                  
-              }
+        jumlahDataScrapping = $("#jumlah_data").val()
+      
+        if(jumlahDataScrapping != "0"){
+            $('#loading-data1').loading();
+            $("#data2").attr("disabled", "true")
+            $("#jumlah_data").attr("disabled", "true")
+                $.ajax({
+                type: "POST",
+                dataType: "JSON",
+                url: "{% url 'store' %}",           
+                data: {
+                    value: value,
+                    jumlahDataScrapping: jumlahDataScrapping  
+                },
+                success: function(data) {       
+                   
+                    $("#data2").removeAttr("disabled")
+                    $("#jumlah_data").removeAttr("disabled")
+                    let length = Object.keys(data.label).length
+                    for(i=0;i<length;i++){
+                        if(data.label[i] == 1){
+                            positif1.push(data.label[i])               
+                        }else{
+                            negatif1.push(data.label[i]) 
+                        }
+                        
+                    }
 
-                $("#loading-data1").loading('stop')
-                $("#logo1").attr("src", dir)
-                donnutChart1(positif1.length, negatif1.length);
-               
-                $("#chart1").css("display", "")               
-                $("#akurasi1").html("Akurasi : " + data.akurasi[0] + "%")
-            },
-            error: function(data) {
-                $("#loading-data1").loading('stop')
-                alert("gagal scrapping");
-                $("#data2").removeAttr("disabled")
-                console.log(data)
-            }
-        })
+                    $("#loading-data1").loading('stop')
+                    $("#logo1").attr("src", dir)
+                    donnutChart1(positif1.length, negatif1.length);
+                
+                    $("#chart1").css("display", "")               
+                    $("#akurasi1").html("Akurasi : " + data.akurasi[0] + "%")
+                },
+                error: function(data) {
+                    $("#loading-data1").loading('stop')
+                    alert("gagal scrapping");
+                    $("#data2").removeAttr("disabled")
+                    console.log(data)
+                }
+            })
+        } else {
+            alert("Jumlah data harus diisi dulu ya :-)")
+        }
+        
     })
 
     $("#data2").change(function() {
         let value = $(this).val()
-        console.log(value)
+        jumlahDataScrapping = $("#jumlah_data").val()
         let dir = "{% static 'images/' %}" + `${value}.png`
-        $('#loading-data2').loading();
-        $("#data1").attr("disabled", "true")
-        $.ajax({
-            type: "POST",
-            url: "{% url 'store' %}",           
-            data: {
-                value: value                
-            },
-            success: function(data) {                
-                $("#loading-data2").loading('stop')
-                $("#logo2").attr("src", dir)
-                $("#data1").removeAttr("disabled")
-                let length = Object.keys(data.label).length
-                    for(i=0;i<length;i++){
-                        if(data.label[i] == 1){
-                            positif2.push(data.label[i])               
-                        }else{
-                            negatif2.push(data.label[i]) 
+        
+        if(jumlahDataScrapping !=0){
+            $("#jumlah_data").attr("disabled", "true")
+            $('#loading-data2').loading();
+            $("#data1").attr("disabled", "true")
+            $.ajax({
+                type: "POST",
+                url: "{% url 'store' %}",           
+                data: {
+                    value: value,
+                    jumlahDataScrapping: jumlahDataScrapping                
+                },
+                success: function(data) {                
+                    $("#loading-data2").loading('stop')
+                    $("#logo2").attr("src", dir)
+                    $("#data1").removeAttr("disabled")
+                    $("#jumlah_data").removeAttr("disabled")
+                    let length = Object.keys(data.label).length
+                        for(i=0;i<length;i++){
+                            if(data.label[i] == 1){
+                                positif2.push(data.label[i])               
+                            }else{
+                                negatif2.push(data.label[i]) 
+                            }
                         }
-                    }
 
-                $("#chart2").css("display", "")               
-                donnutChart2(positif2.length, negatif2.length);
-                $("#akurasi2").html("Akurasi " + data.akurasi[0] + "%")
+                    $("#chart2").css("display", "")               
+                    donnutChart2(positif2.length, negatif2.length);
+                    $("#akurasi2").html("Akurasi " + data.akurasi[0] + "%")
 
-            },
-            error: function(data) {
-                $("#loading-data2").loading('stop')
-                alert("gagal scrapping");
-                $("#data1").removeAttr("disabled")
-                console.log(data)
-            }
-        })
+                },
+                error: function(data) {
+                    $("#loading-data2").loading('stop')
+                    alert("gagal scrapping");
+                    $("#data1").removeAttr("disabled")
+                    console.log(data)
+                }
+            })
+        } else {
+            alert("Jumlah data harus diisi dulu ya :-)")
+        }
+       
     })
 
     function donnutChart1(positif, negatif)

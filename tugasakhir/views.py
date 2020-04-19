@@ -10,11 +10,14 @@ def index(request):
 
 def store(request):
     if(request.method == "POST"):
-        data = request.POST['value']               
+        data = request.POST['value']
+        jumlah = request.POST['jumlahDataScrapping']                 
         proses = process.sentimenAnalysis()
-        dataScrapping = proses.scrappingData(data=data)
+        dataScrapping = proses.scrappingData(data=data, jmlDataScrapping=jumlah)
+    print("data tanpa to dict")
+ 
+    # response = dataScrapping.to_dict()  
   
-    response = dataScrapping.to_dict()   
-    return JsonResponse(response, safe=False)
+    return JsonResponse(dataScrapping, safe=False)
 
 

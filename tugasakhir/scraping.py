@@ -47,7 +47,7 @@ from sklearn.metrics import classification_report, confusion_matrix
 class sentimenAnalysis:
     search=""
    
-    def scrappingData(request, data):  
+    def scrappingData(request, data, jmlDataScrapping):  
         
         search = data
         print(data)
@@ -71,22 +71,29 @@ class sentimenAnalysis:
 
         count = 1
         i = 1
-        while i < 8:
-            driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-            time.sleep(2)
-            if((i % 4)== 0):
-                driver.execute_script('window.scrollTo(1, 2000);')
+        while i < 30:
+            try:
+                driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
                 time.sleep(2)
-                tes2 = driver.find_element_by_xpath("//*[@id='fcxH9b']/div[4]/c-wiz[3]/div/div[2]/div/div[1]/div/div/div[1]/div[2]/div[2]/div/span/span")
-                tes2.click()
-            print("scroll ke -" + str(count))
-            i += 1
-            count+=1
+                if((i % 5)== 0):
+                    driver.execute_script('window.scrollTo(1, 2000);')
+                    time.sleep(2)
+                    tes2 = driver.find_element_by_xpath("//*[@id='fcxH9b']/div[4]/c-wiz[3]/div/div[2]/div/div[1]/div/div/div[1]/div[2]/div[2]/div/span/span")
+                    tes2.click()
+                print("scroll ke -" + str(count))
+                i += 1
+                count+=1
+            except:
+                print("skip scrol")
+                i += 1
+                count+=1
         print('udah scrolling')
         a = 'test1'
         b = 1
         c = []
-       
+        b = 1
+        d = 0
+        errorNumber = 0
         driver.execute_script('window.scrollTo(1, 10);')
 
         while a != 'test':
@@ -96,13 +103,27 @@ class sentimenAnalysis:
                 tes3.click()
             except NoSuchElementException:
                 d = 1
-                
-            tes4 = driver.find_element_by_xpath("/html/body/div[1]/div[4]/c-wiz[3]/div/div[2]/div/div[1]/div/div/div[1]/div[2]/div/div["+str(b)+"]/div/div[2]/div[2]/span["+str(d)+"]")
-            print(str(b) + tes4.text)
-            c.append(tes4.text)
-            if(b >= 50):
-                a = 'test'
-            b += 1
+            try:    
+                tes4 = driver.find_element_by_xpath("/html/body/div[1]/div[4]/c-wiz[3]/div/div[2]/div/div[1]/div/div/div[1]/div[2]/div/div["+str(b)+"]/div/div[2]/div[2]/span["+str(d)+"]")
+          
+                # print(str(b) + tes4.text)
+                print("review ke - " +str(b))
+                c.append(tes4.text)
+           
+                if(b >= jmlDataScrapping):                   
+                    a = 'test'
+                b += 1
+            except:
+                print("element error")
+                b += 3
+                errorNumber +=1
+                print("nilai b " + str(b))                
+                if(errorNumber == 10):
+                    a = 'test'
+                else:
+                    continue
+                # a = 'test'
+
     #akhir tahap scrape data------------------------------------
 
         print(len(c))
@@ -186,7 +207,7 @@ class sentimenAnalysis:
         #akhir add stopword
 
         #menjadikan kata ke bentuk dasarnya
-
+         
         factory = StemmerFactory()
         stemmer = factory.create_stemmer()
 
@@ -241,7 +262,8 @@ class sentimenAnalysis:
         print("akurasi")
         print(accuracy_score(y_test, y_hat))
         dt['akurasi'] = akurasi
-        return dt
+        response = dt.to_dict()
+        return response
        
 class Tokenizer:
   
