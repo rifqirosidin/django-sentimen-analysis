@@ -103,6 +103,7 @@ class sentimenAnalysis:
                 tes3.click()
             except NoSuchElementException:
                 d = 1
+
             try:    
                 tes4 = driver.find_element_by_xpath("/html/body/div[1]/div[4]/c-wiz[3]/div/div[2]/div/div[1]/div/div/div[1]/div[2]/div/div["+str(b)+"]/div/div[2]/div[2]/span["+str(d)+"]")
           
@@ -123,6 +124,13 @@ class sentimenAnalysis:
                 else:
                     continue
                 # a = 'test'
+                
+            tes4 = driver.find_element_by_xpath("/html/body/div[1]/div[4]/c-wiz[3]/div/div[2]/div/div[1]/div/div/div[1]/div[2]/div/div["+str(b)+"]/div/div[2]/div[2]/span["+str(d)+"]")
+            print(str(b) + tes4.text)
+            c.append(tes4.text)
+            if(b >= 500):
+                a = 'test'
+            b += 1
 
     #akhir tahap scrape data------------------------------------
 
@@ -245,7 +253,6 @@ class sentimenAnalysis:
 
         dt['label'] = sentim
 
-        #############################################
         X = komentar['ulasan'].values
         y = dt['label'].values
         

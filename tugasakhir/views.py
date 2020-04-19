@@ -14,9 +14,6 @@ def store(request):
         jumlah = request.POST['jumlahDataScrapping']                 
         proses = process.sentimenAnalysis()
         dataScrapping = proses.scrappingData(data=data, jmlDataScrapping=jumlah)
-    print("data tanpa to dict")
- 
-    # response = dataScrapping.to_dict()  
   
     return JsonResponse(dataScrapping, safe=False)
 
