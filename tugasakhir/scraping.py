@@ -19,7 +19,7 @@ import Sastrawi
 import matplotlib.pyplot as plt
 import numpy as np
 import Sastrawi
-import seaborn as  sns
+import seaborn as sns
 import math
 
 from nltk.tokenize import word_tokenize 
@@ -48,8 +48,7 @@ class sentimenAnalysis:
     search=""
    
     def scrappingData(request, data, jmlDataScrapping):  
-
-
+        
         search = data
         print(data)
         nltk.download('punkt')
@@ -58,9 +57,10 @@ class sentimenAnalysis:
         # %matplotlib inline
         RANDOM_SEED = 42
         np.random.seed(RANDOM_SEED)
-        
-        chrome_path= r"C:\Users\Zalina\Documents\TA\chromedriver_win32\chromedriver.exe"
+
+        chrome_path= r"C:\Users\Rifqi Rosidin\Documents\za\chromedriver_win32\chromedriver.exe"
         driver=webdriver.Chrome(chrome_path)
+        
             
         driver.get('https://play.google.com/store/search?q=' +search+ '&c=apps'+ '&hl=in')
         tes = driver.find_element_by_xpath("//*[@id='fcxH9b']/div[4]/c-wiz/div/div[2]/div/c-wiz/c-wiz[1]/c-wiz/div/div[2]/div[1]/c-wiz/div/div/div[1]/div/div/a")
@@ -71,16 +71,9 @@ class sentimenAnalysis:
 
         count = 1
         i = 1
-
-        while i < 10:
-            driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-            time.sleep(2)
-            if((i % 5)== 0):
-                driver.execute_script('window.scrollTo(1, 2000);')
         while i < 30:
             try:
                 driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-
                 time.sleep(2)
                 if((i % 5)== 0):
                     driver.execute_script('window.scrollTo(1, 2000);')
@@ -110,14 +103,6 @@ class sentimenAnalysis:
                 tes3.click()
             except NoSuchElementException:
                 d = 1
-            try:        
-                tes4 = driver.find_element_by_xpath("/html/body/div[1]/div[4]/c-wiz[3]/div/div[2]/div/div[1]/div/div/div[1]/div[2]/div/div["+str(b)+"]/div/div[2]/div[2]/span["+str(d)+"]")
-                print(str(b) + tes4.text)
-                c.append(tes4.text)
-            except NoSuchElementException:
-                c.append("")
-
-            if(b >= 50):
 
             try:    
                 tes4 = driver.find_element_by_xpath("/html/body/div[1]/div[4]/c-wiz[3]/div/div[2]/div/div[1]/div/div/div[1]/div[2]/div/div["+str(b)+"]/div/div[2]/div[2]/span["+str(d)+"]")
@@ -139,20 +124,13 @@ class sentimenAnalysis:
                 else:
                     continue
                 # a = 'test'
-                
-            tes4 = driver.find_element_by_xpath("/html/body/div[1]/div[4]/c-wiz[3]/div/div[2]/div/div[1]/div/div/div[1]/div[2]/div/div["+str(b)+"]/div/div[2]/div[2]/span["+str(d)+"]")
-            print(str(b) + tes4.text)
-            c.append(tes4.text)
-            if(b >= 500):
-
-                a = 'test'
-            b += 1
+  
 
     #akhir tahap scrape data------------------------------------
 
         print(len(c))
 
-    # hapus komentar yang berisi emoji
+    # hapus komentar
         data = pd.DataFrame({"ulasan": c})
         df = data['ulasan']
         ulasan = []
@@ -166,6 +144,7 @@ class sentimenAnalysis:
                 y = 'tess'
             x += 1
         komentar = data.drop(ulasan)
+
         print("--------------hapus Emoji-------")
         print(komentar)
 
@@ -184,15 +163,14 @@ class sentimenAnalysis:
         print("-------case folding dan angka dan whirespace---------")
         print(komentar)
 
-        #tahap melakukan pemisahan teks menjadi potongan-potongan
         token=[]
 
         for i in komentar['ulasan']:
             tokens = nltk.tokenize.word_tokenize(str(i))
             token.append(tokens)
         token
-        #akhir tahap pemisahan teks menjadi potongan-potongan 
-        
+
+    #akhir tahap pemisahan teks menjadi potongan-potongan 
         def listToString(s):  
         
         # initialize an empty string 
@@ -207,13 +185,14 @@ class sentimenAnalysis:
 
         kata = listToString(token)
             
+        #add stopword
         print("-------pemisahan teks menjadi potongan-potongan ---------")
         print(kata)
 
         #add stopword
 
         stop_factory = StopWordRemoverFactory().get_stop_words()
-        more_stopword = ['yg', 'tp'] #menambahkan  stopword
+        more_stopword = ['yg', 'tp'] #menambahkan stopword
         print(stopwords)
 
         factory = StopWordRemoverFactory()
@@ -241,6 +220,8 @@ class sentimenAnalysis:
             Hasil.append(hasil)
         Hasil
 
+        kata = listToString(Hasil)
+
         print("------PROSES LABELING--------")
         config = dict()
         config["negation"] = True
@@ -266,12 +247,7 @@ class sentimenAnalysis:
 
         dt['label'] = sentim
 
-
-        #############################################
-        X = dt['ulasan'].values
-
         X = komentar['ulasan'].values
-
         y = dt['label'].values
         
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=RANDOM_SEED)
@@ -289,7 +265,7 @@ class sentimenAnalysis:
         dt['akurasi'] = akurasi
         response = dt.to_dict()
         return response
-
+       
 class Tokenizer:
   
   def clean(self, text):
@@ -365,3 +341,5 @@ class MultinomialNaiveBayes:
           result.append(max(class_scores, key=class_scores.get))
 
         return result
+
+       
