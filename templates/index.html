@@ -103,6 +103,12 @@
                     <div class="row fh5co-advantages-grid-columns wow animated fadeIn" data-wow-delay="0.36s">
 
     <div class="container mt-3 justify-content-center"  align="center">          
+
+    <h3 class="text-center mt-3">Sentimen Analysis</h3>
+    <p class="text-center">Perbandingan Aplikasi Hotel Booking</p>
+ 
+
+    <div class="container mt-3 justify-content-center"  align="center">  
         <div class="row justify-content-center mb-4">
             <div class="col-md-2">
                 <select class="custom-select" id="jumlah_data" name="jumlah_data">
@@ -115,8 +121,13 @@
                     <option value="1000">1000</option>                    
                 </select> 
             </div>
+ 
         </div>
         <div class="row justify-content-center"> 
+
+        </div>    
+        <div class="row justify-content-center">      
+
             <div class="col-md-3" id="loading-data1">
                 <select class="custom-select" id="data1" name="data1">
                     <option selected>Pilih menu</option>
@@ -141,7 +152,10 @@
             </div>
            
             <div class="col-md-2 text-center">
+
                 <h4>vs</h4>
+              <h4>Bandingkan</h4>                
+
             </div>
             <div class="col-md-3" id="loading-data2">
                 <select class="custom-select" id="data2" name="data2">
@@ -241,12 +255,17 @@
 <script src="{% static "vendor/js/jquery.min.js" %}"></script>
 <script src="{% static "vendor/jquery-loading/dist/jquery.loading.js" %}"></script>
 
+
 <!-- <script src="{% static "vendor/js/bootstrap.js" %}"></script> -->
 <script src="{% static "vendor/js/owl.carousel.js" %}"></script>
 <script src="{% static "vendor/js/wow.min.js" %}"></script>
 <script src="{% static "vendor/js/main.js" %}"></script>
 <script> 
 </script>
+<script>
+  
+</script>
+
 <script> 
 
     var positif1 = []
@@ -307,12 +326,58 @@
     } else {
             alert("Jumlah data harus diisi dulu ya :-)")
         }  
+        if(jumlahDataScrapping != "0"){
+            $('#loading-data1').loading();
+            $("#data2").attr("disabled", "true")
+            $("#jumlah_data").attr("disabled", "true")
+                $.ajax({
+                type: "POST",
+                dataType: "JSON",
+                url: "{% url 'store' %}",           
+                data: {
+                    value: value,
+                    jumlahDataScrapping: jumlahDataScrapping  
+                },
+                success: function(data) {       
+                   
+                    $("#data2").removeAttr("disabled")
+                    $("#jumlah_data").removeAttr("disabled")
+                    let length = Object.keys(data.label).length
+                    for(i=0;i<length;i++){
+                        if(data.label[i] == 1){
+                            positif1.push(data.label[i])               
+                        }else{
+                            negatif1.push(data.label[i]) 
+                        }
+                        
+                    }
+
+                    $("#loading-data1").loading('stop')
+                    $("#logo1").attr("src", dir)
+                    donnutChart1(positif1.length, negatif1.length);
+                
+                    $("#chart1").css("display", "")               
+                    $("#akurasi1").html("Akurasi : " + data.akurasi[0] + "%")
+                },
+                error: function(data) {
+                    $("#loading-data1").loading('stop')
+                    alert("gagal scrapping");
+                    $("#data2").removeAttr("disabled")
+                    console.log(data)
+                }
+            })
+        } else {
+            alert("Jumlah data harus diisi dulu ya :-)")
+        }
+        
+
     })
 
     $("#data2").change(function() {
         let value = $(this).val()
         jumlahDataScrapping = $("#jumlah_data").val()
         let dir = "{% static 'images/' %}" + `${value}.png`
+
 
         if(jumlahDataScrapping !=0){
         $("#jumlah_data").attr("disabled", "true")
@@ -336,22 +401,18 @@
                             positif2.push(data.label[i])               
                         }else{
                             negatif2.push(data.label[i]) 
+
+        
                         }
                     }
-
-                $("#chart2").css("display", "")               
-                donnutChart2(positif2.length, negatif2.length);
-                $("#akurasi2").html("Akurasi " + data.akurasi[0] * 100 + "%")
-
-            },
-            error: function(data) {
-                $("#loading-data2").loading('stop')
-                alert("Proses Terhenti");
-                $("#data1").removeAttr("disabled")
-                console.log(data)
-            }
-        })
-    } else {
+                error: function(data) {
+                    $("#loading-data2").loading('stop')
+                    alert("gagal scrapping");
+                    $("#data1").removeAttr("disabled")
+                    console.log(data)
+                }
+            })
+        } else {
             alert("Jumlah data harus diisi dulu ya :-)")
         }
     })

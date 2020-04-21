@@ -8,9 +8,17 @@ def index(request):
 def store(request):
     if(request.method == "POST"):
         data = request.POST['value']
+
         jumlah = request.POST['jumlahDataScrapping']                        
         proses = process.sentimenAnalysis()
         dataScrapping = proses.scrappingData(data=data, jmlDataScrapping=jumlah)
   
    # response = dt.to_dict()   
     return JsonResponse(dataScrapping, safe=False)
+
+        jumlah = request.POST['jumlahDataScrapping']                 
+        proses = process.sentimenAnalysis()
+        dataScrapping = proses.scrappingData(data=data, jmlDataScrapping=jumlah)
+  
+    return JsonResponse(dataScrapping, safe=False)
+

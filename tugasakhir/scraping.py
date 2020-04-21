@@ -49,6 +49,7 @@ class sentimenAnalysis:
    
     def scrappingData(request, data, jmlDataScrapping):  
 
+
         search = data
         print(data)
         nltk.download('punkt')
@@ -70,22 +71,36 @@ class sentimenAnalysis:
 
         count = 1
         i = 1
+
         while i < 10:
             driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
             time.sleep(2)
             if((i % 5)== 0):
                 driver.execute_script('window.scrollTo(1, 2000);')
+        while i < 30:
+            try:
+                driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+
                 time.sleep(2)
-                tes2 = driver.find_element_by_xpath("//*[@id='fcxH9b']/div[4]/c-wiz[3]/div/div[2]/div/div[1]/div/div/div[1]/div[2]/div[2]/div/span/span")
-                tes2.click()
-            print("scroll ke -" + str(count))
-            i += 1
-            count+=1
+                if((i % 5)== 0):
+                    driver.execute_script('window.scrollTo(1, 2000);')
+                    time.sleep(2)
+                    tes2 = driver.find_element_by_xpath("//*[@id='fcxH9b']/div[4]/c-wiz[3]/div/div[2]/div/div[1]/div/div/div[1]/div[2]/div[2]/div/span/span")
+                    tes2.click()
+                print("scroll ke -" + str(count))
+                i += 1
+                count+=1
+            except:
+                print("skip scrol")
+                i += 1
+                count+=1
         print('udah scrolling')
         a = 'test1'
         b = 1
         c = []
-       
+        b = 1
+        d = 0
+        errorNumber = 0
         driver.execute_script('window.scrollTo(1, 10);')
 
         while a != 'test':
@@ -95,7 +110,6 @@ class sentimenAnalysis:
                 tes3.click()
             except NoSuchElementException:
                 d = 1
-
             try:        
                 tes4 = driver.find_element_by_xpath("/html/body/div[1]/div[4]/c-wiz[3]/div/div[2]/div/div[1]/div/div/div[1]/div[2]/div/div["+str(b)+"]/div/div[2]/div[2]/span["+str(d)+"]")
                 print(str(b) + tes4.text)
@@ -104,8 +118,36 @@ class sentimenAnalysis:
                 c.append("")
 
             if(b >= 50):
+
+            try:    
+                tes4 = driver.find_element_by_xpath("/html/body/div[1]/div[4]/c-wiz[3]/div/div[2]/div/div[1]/div/div/div[1]/div[2]/div/div["+str(b)+"]/div/div[2]/div[2]/span["+str(d)+"]")
+          
+                # print(str(b) + tes4.text)
+                print("review ke - " +str(b))
+                c.append(tes4.text)
+           
+                if(b >= jmlDataScrapping):                   
+                    a = 'test'
+                b += 1
+            except:
+                print("element error")
+                b += 3
+                errorNumber +=1
+                print("nilai b " + str(b))                
+                if(errorNumber == 10):
+                    a = 'test'
+                else:
+                    continue
+                # a = 'test'
+                
+            tes4 = driver.find_element_by_xpath("/html/body/div[1]/div[4]/c-wiz[3]/div/div[2]/div/div[1]/div/div/div[1]/div[2]/div/div["+str(b)+"]/div/div[2]/div[2]/span["+str(d)+"]")
+            print(str(b) + tes4.text)
+            c.append(tes4.text)
+            if(b >= 500):
+
                 a = 'test'
             b += 1
+
     #akhir tahap scrape data------------------------------------
 
         print(len(c))
@@ -188,7 +230,7 @@ class sentimenAnalysis:
         #akhir add stopword
 
         #menjadikan kata ke bentuk dasarnya
-
+         
         factory = StemmerFactory()
         stemmer = factory.create_stemmer()
 
@@ -224,8 +266,12 @@ class sentimenAnalysis:
 
         dt['label'] = sentim
 
+
         #############################################
         X = dt['ulasan'].values
+
+        X = komentar['ulasan'].values
+
         y = dt['label'].values
         
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=RANDOM_SEED)
