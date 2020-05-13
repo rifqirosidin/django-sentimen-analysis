@@ -5,25 +5,25 @@ import pandas as pd
 
 class sentistrength:
     def __init__(self, config=dict()):
-        self.negasi = [line.replace('\n','') for line in open(r"C:\Users\Zalina\Desktop\My\sentistrength_id-master\sentistrength_id-master\negatingword.txt").read().splitlines()]
-        self.tanya = [line.replace('\n','') for line in open(r"C:\Users\Zalina\Desktop\My\sentistrength_id-master\sentistrength_id-master\questionword.txt").read().splitlines()]
+        self.negasi = [line.replace('\n','') for line in open(r"C:\Users\Rifqi Rosidin\Documents\za\sentistrength_id-master\negatingword.txt").read().splitlines()]
+        self.tanya = [line.replace('\n','') for line in open(r"C:\Users\Rifqi Rosidin\Documents\za\sentistrength_id-master\questionword.txt").read().splitlines()]
         #create sentiment words dictionary
-        self.sentiwords_txt = [line.replace('\n','').split(":") for line in open(r"C:\Users\Zalina\Desktop\My\sentistrength_id-master\sentistrength_id-master\sentiwords_id.txt").read().splitlines()]
+        self.sentiwords_txt = [line.replace('\n','').split(":") for line in open(r"C:\Users\Rifqi Rosidin\Documents\za\sentistrength_id-master\sentiwords_id.txt").read().splitlines()]
         self.sentiwords_dict = OrderedDict()
         for term in self.sentiwords_txt:
             self.sentiwords_dict[term[0]] = int(term[1])
         #create emoticon dictionary
-        self.emoticon_txt = [line.replace('\n','').split(" | ") for line in open(r"C:\Users\Zalina\Desktop\My\sentistrength_id-master\sentistrength_id-master\emoticon_id.txt").read().splitlines()]
+        self.emoticon_txt = [line.replace('\n','').split(" | ") for line in open(r"C:\Users\Rifqi Rosidin\Documents\za\sentistrength_id-master\emoticon_id.txt").read().splitlines()]
         self.emoticon_dict = OrderedDict()
         for term in self.emoticon_txt:
             self.emoticon_dict[term[0]] = int(term[1])
         #create idioms dictionary
-        self.idioms_txt = [line.replace('\n','').split(":") for line in open(r"C:\Users\Zalina\Desktop\My\sentistrength_id-master\sentistrength_id-master\idioms_id.txt").read().splitlines()]
+        self.idioms_txt = [line.replace('\n','').split(":") for line in open(r"C:\Users\Rifqi Rosidin\Documents\za\sentistrength_id-master\idioms_id.txt").read().splitlines()]
         self.idioms_dict = OrderedDict()
         for term in self.idioms_txt:
             self.idioms_dict[term[0]] = int(term[1])
         #create boosterwords dictionary
-        self.boosterwords_txt = [line.replace('\n','').split(":") for line in open(r"C:\Users\Zalina\Desktop\My\sentistrength_id-master\sentistrength_id-master\boosterwords_id.txt").read().splitlines()]
+        self.boosterwords_txt = [line.replace('\n','').split(":") for line in open(r"C:\Users\Rifqi Rosidin\Documents\za\sentistrength_id-master\boosterwords_id.txt").read().splitlines()]
         self.boosterwords_dict = OrderedDict()
         for term in self.boosterwords_txt:
             self.boosterwords_dict[term[0]] = int(term[1])

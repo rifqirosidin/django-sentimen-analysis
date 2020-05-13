@@ -120,7 +120,7 @@
 
             <div class="col-md-3" id="loading-data1">
                 <select class="custom-select" id="data1" name="data1">
-                    <option selected>Pilih menu</option>
+                    <option disabled selected>Pilih menu</option>
                     <option value="Oyo">Oyo</option>
                     <option value="Traveloka">Traveloka</option>
                     <option value="Booking.com">Booking.com</option>
@@ -134,8 +134,8 @@
                 </select>              
                
                 <img src="{% static "images/Oy.png" %}" class="mt-3 mb-3" width="70%" height="40%" alt="My image" id="logo1">
-                <div id="chart1">
-                    <canvas id="myChart1" style="height:auto; width:70%;"></canvas>
+                <div id="chart1" style="display: none;">                   
+                    <canvas id="myChart1" width="255" height="214"></canvas>
                     <h4 id="akurasi1"></h4>
                 </div>
 
@@ -148,14 +148,14 @@
             </div>
             <div class="col-md-3" id="loading-data2">
                 <select class="custom-select" id="data2" name="data2">
-                    <option selected>Pilih menu</option>
+                    <option disabled selected>Pilih menu</option>
                     <option value="Oyo">Oyo</option>
                     <option value="Traveloka">Traveloka</option>
                     <option value="Booking.com">Booking.com</option>
                     <option value="Tiket.com">Tiket.com</option>
                     <option value="Airy">Airy</option>
-                    <option value="Mister Aladin">Mister Aladin</option>
-                    <option value="Pegi-Pegi">Pegi-Pegi</option>
+                    <option value="Aladin">Mister Aladin</option>
+                    <option value="Pegipegi">Pegi-Pegi</option>
                     <option value="RedDoorz">RedDoorz</option>
                     <option value="Agoda">Agoda</option>
                     <option value="Trivago">Trivago</option>
@@ -163,7 +163,7 @@
  
                 <img src="{% static "images/Oy.png" %}" class="mt-3 mb-3" width="70%" height="40%" alt="My image" id="logo2">
                 <div id="chart2" style="display: none;">
-                    <canvas id="myChart2" style="height:auto; width:70%;"></canvas>
+                    <canvas id="myChart2" width="255" height="214"></canvas>
                     <h4 id="akurasi2"></h4>
                 </div>
             </div>
@@ -254,8 +254,10 @@
     var positif1 = []
     var negatif1 = []
     var positif2 = []
-    var negatif2 = []
+    var negatif2 = [] 
     var jumlahDataScrapping = 0;
+  
+    
     var ctx1 = document.getElementById('myChart1').getContext('2d');
     var ctx2 = document.getElementById('myChart2').getContext('2d');
     $.ajaxSetup({
@@ -285,6 +287,7 @@
                 $("#jumlah_data").removeAttr("disabled")
                 let length = Object.keys(data.label).length
                 for(i=0;i<length;i++){
+                    
                     if(data.label[i] == 1){
                         positif1.push(data.label[i])               
                     }else{
@@ -294,8 +297,7 @@
 
                 $("#loading-data1").loading('stop')
                 $("#logo1").attr("src", dir)
-                donnutChart1(positif1.length, negatif1.length);
-               
+                donnutChart1(positif1.length, negatif1.length, length);               
                 $("#chart1").css("display", "")               
                 $("#akurasi1").html("Akurasi : " + data.akurasi[0] * 100 + "%")
             },
@@ -339,11 +341,16 @@
                         if(data.label[i] == 1){
                             positif2.push(data.label[i])               
                         }else{
-                            negatif2.push(data.label[i]) 
-
-        
+                            negatif2.push(data.label[i])         
                         }
                     }
+                    $("#loading-data2").loading('stop')
+                    $("#logo2").attr("src", dir)
+                    $("#chart2").css("display", "")  
+                    donnutChart2(positif2.length, negatif2.length, length);               
+                                 
+                    $("#akurasi2").html("Akurasi : " + data.akurasi[0] * 100 + "%")
+
                 },
             error: function(data) {
                     $("#loading-data2").loading('stop')
@@ -357,7 +364,7 @@
         }
     })
 
-    function donnutChart1(positif, negatif)
+    function donnutChart1(positif, negatif, totalData)
     {
         data = {
         datasets: [{
@@ -424,14 +431,14 @@
             }
         });
 
-
+        var persentase1 = (positif / totalData) * 100
         var myDoughnutChart = new Chart(ctx1, {
             type: 'doughnut',
             data: data,
             options: {
                 elements: {
                     center: {
-                    text: positif,
+                    text: persentase1.toFixed(1) + '%', 
                     color: '#36A2EB', //Default black
                     fontStyle: 'Helvetica', //Default Arial
                     sidePadding: 15 //Default 20 (as a percentage)
@@ -442,7 +449,7 @@
     }
 
 
-    function donnutChart2(positif, negatif)
+    function donnutChart2(positif, negatif, totalData)
     {
         data = {
         datasets: [{
@@ -509,14 +516,14 @@
             }
         });
 
-
+        var persentase = (positif / totalData) * 100;
         var myDoughnutChart = new Chart(ctx2, {
             type: 'doughnut',
             data: data,
             options: {
                 elements: {
                     center: {
-                    text: positif,
+                    text: persentase.toFixed(1) + "%" ,
                     color: '#36A2EB', //Default black
                     fontStyle: 'Helvetica', //Default Arial
                     sidePadding: 15 //Default 20 (as a percentage)

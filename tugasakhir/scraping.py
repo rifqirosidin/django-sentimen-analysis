@@ -46,10 +46,11 @@ from sklearn.metrics import classification_report, confusion_matrix
 
 class sentimenAnalysis:
     search=""
-   
+    jumlahData=0
     def scrappingData(request, data, jmlDataScrapping):  
         
         search = data
+        jumlahData=int(jmlDataScrapping)
         print(data)
         nltk.download('punkt')
         nltk.download('stopwords')
@@ -69,9 +70,11 @@ class sentimenAnalysis:
         tes1 = driver.find_element_by_xpath("//*[@id='fcxH9b']/div[4]/c-wiz[2]/div/div[2]/div/div[1]/div/div/div[1]/div[6]/div/span/span")
         tes1.click()
 
+        time.sleep(4)
+        
         count = 1
         i = 1
-        while i < 30:
+        while i < 5:
             try:
                 driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
                 time.sleep(2)
@@ -110,21 +113,17 @@ class sentimenAnalysis:
                 # print(str(b) + tes4.text)
                 print("review ke - " +str(b))
                 c.append(tes4.text)
-           
-                if(b >= jmlDataScrapping):                   
+                
+                if(int(b) >= jumlahData):                   
                     a = 'test'
                 b += 1
+                errorNumber += 1
             except:
-                print("element error")
-                b += 3
-                errorNumber +=1
-                print("nilai b " + str(b))                
-                if(errorNumber == 10):
+                print(jumlahData)
+                errorNumber += 1               
+                if(int(errorNumber) >= jumlahData):                   
                     a = 'test'
-                else:
-                    continue
-                # a = 'test'
-  
+                b += 1
 
     #akhir tahap scrape data------------------------------------
 
